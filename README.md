@@ -1,5 +1,5 @@
-# d2l
-d2l is a course in my college, and here the repository was built to record my learning process.
+# deep learning
+Deep learning is a course in my college, and here the repository was built to record my learning process.
 
 ## Installation
 ```bash
