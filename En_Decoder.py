@@ -32,7 +32,8 @@ class Seq2SeqDecoder(d2l.Decoder):
     
     def forward(self, X, state):
         X = self.embedding(X).permute(1, 0, 2)
-        context = state[-1].repeat(X.shape[0], 1, 1)        # state[-1]取最后一层的隐状态，形状变成[batch_size, num_hiddens];由于state[-1]只有一个时间步，需要用repeat(dim0, dim1, dim2)分别在三个维度上分别复制dim0, dim1, dim2次。此处dim0 = num_step(时间步数量)，dim1=dim2=1，表示保持原样，相当于把(batch_size, num_hiddens)复制了num_step份。
+        context = state[-1].repeat(X.shape[0], 1, 1)        
+        # state[-1]取最后一层的隐状态，形状变成[batch_size, num_hiddens];由于state[-1]只有一个时间步，需要用repeat(dim0, dim1, dim2)分别在三个维度上分别复制dim0, dim1, dim2次。此处dim0 = num_step(时间步数量)，dim1=dim2=1，表示保持原样，相当于把(batch_size, num_hiddens)复制了num_step份。
         X_cat_context = torch.cat((X, context), 2)
         output, state = self.rnn(X_cat_context, state)
         output = self.dense(output).permute(1, 0, 2)
@@ -46,6 +47,7 @@ class MaskedSoftmaxCELoss(nn.CrossEntropyLoss):
         self.reduction = 'none'
         unweighted_loss = super(MaskedSoftmaxCELoss, self).forward(pred.permute(0, 2, 1), label)
         weighted_loss = (unweighted_loss * weights).mean(dim=1)
+        
         return weighted_loss
         
 encoder = Seq2SeqEncoder(vocab_size=10, embed_size=8, num_hiddens=16, num_layers=2)
